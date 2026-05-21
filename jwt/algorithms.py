@@ -443,7 +443,7 @@ if has_crypto:
 
         def prepare_key(self, key: AllowedRSAKeys | str | bytes) -> AllowedRSAKeys:
             if isinstance(key, self._crypto_key_types):
-                return cast(AllowedRSAKeys, key)
+                return key
 
             if not isinstance(key, (bytes, str)):
                 raise TypeError("Expecting a PEM-formatted key.")
@@ -637,9 +637,8 @@ if has_crypto:
 
         def prepare_key(self, key: AllowedECKeys | str | bytes) -> AllowedECKeys:
             if isinstance(key, self._crypto_key_types):
-                ec_key = cast(AllowedECKeys, key)
-                self._validate_curve(ec_key)
-                return ec_key
+                self._validate_curve(key)
+                return key
 
             if not isinstance(key, (bytes, str)):
                 raise TypeError("Expecting a PEM-formatted key.")
