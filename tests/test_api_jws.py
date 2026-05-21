@@ -989,9 +989,7 @@ class TestJWS:
         # RFC 7797 §3: producers MUST list "b64" in "crit" whenever "b64"
         # appears in the protected header.
         secret = "secret"
-        token = jws.encode(
-            payload, secret, algorithm="HS256", is_payload_detached=True
-        )
+        token = jws.encode(payload, secret, algorithm="HS256", is_payload_detached=True)
 
         msg_header, _, _ = token.split(".")
         header_obj = json.loads(base64url_decode(msg_header.encode()))
@@ -1046,9 +1044,7 @@ class TestJWS:
         ).decode()
 
         with pytest.raises(DecodeError, match="Payload segment must be empty"):
-            jws.decode(
-                token, secret, algorithms=["HS256"], detached_payload=payload
-            )
+            jws.decode(token, secret, algorithms=["HS256"], detached_payload=payload)
 
     def test_decode_b64_false_without_crit_b64_is_rejected(
         self, jws: PyJWS, payload: bytes
@@ -1069,9 +1065,7 @@ class TestJWS:
         token = b".".join([header_b64, b"", base64url_encode(sig)]).decode()
 
         with pytest.raises(InvalidTokenError, match="b64.*crit"):
-            jws.decode(
-                token, secret, algorithms=["HS256"], detached_payload=payload
-            )
+            jws.decode(token, secret, algorithms=["HS256"], detached_payload=payload)
 
     def test_decode_detached_content_without_proper_argument(
         self, jws: PyJWS, payload: bytes

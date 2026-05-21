@@ -171,9 +171,7 @@ class PyJWS:
             # base64-encoded.
             existing_crit = header.get("crit", [])
             if not isinstance(existing_crit, list):
-                raise InvalidTokenError(
-                    "Invalid 'crit' header: must be a list"
-                )
+                raise InvalidTokenError("Invalid 'crit' header: must be a list")
             if "b64" not in existing_crit:
                 header["crit"] = [*existing_crit, "b64"]
         elif "b64" in header:
@@ -259,8 +257,7 @@ class PyJWS:
             crit = header.get("crit") or []
             if not isinstance(crit, list) or "b64" not in crit:
                 raise InvalidTokenError(
-                    "The 'b64' header parameter requires 'b64' to be "
-                    "listed in 'crit'."
+                    "The 'b64' header parameter requires 'b64' to be listed in 'crit'."
                 )
             if detached_payload is None:
                 raise DecodeError(
@@ -353,9 +350,7 @@ class PyJWS:
             # segment to force CPU + memory cost before the signature is
             # even checked.
             if payload_segment:
-                raise DecodeError(
-                    "Payload segment must be empty when 'b64' is false."
-                )
+                raise DecodeError("Payload segment must be empty when 'b64' is false.")
             payload = b""
         else:
             try:
