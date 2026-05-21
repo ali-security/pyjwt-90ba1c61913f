@@ -443,7 +443,10 @@ if has_crypto:
 
         def prepare_key(self, key: AllowedRSAKeys | str | bytes) -> AllowedRSAKeys:
             if isinstance(key, self._crypto_key_types):
-                return key
+                # Cast is required for type narrowing on Python 3.9's mypy
+                # but redundant on newer mypy versions; suppress both
+                # diagnostics so the line works across all supported envs.
+                return cast(AllowedRSAKeys, key)  # type: ignore[redundant-cast,unused-ignore]
 
             if not isinstance(key, (bytes, str)):
                 raise TypeError("Expecting a PEM-formatted key.")
@@ -637,8 +640,10 @@ if has_crypto:
 
         def prepare_key(self, key: AllowedECKeys | str | bytes) -> AllowedECKeys:
             if isinstance(key, self._crypto_key_types):
-                self._validate_curve(key)
-                return key
+                # See note in RSAAlgorithm.prepare_key.
+                ec_key = cast(AllowedECKeys, key)  # type: ignore[redundant-cast,unused-ignore]
+                self._validate_curve(ec_key)
+                return ec_key
 
             if not isinstance(key, (bytes, str)):
                 raise TypeError("Expecting a PEM-formatted key.")
