@@ -1,0 +1,27 @@
+name: seal-tests
+
+on:
+  push:
+  pull_request:
+
+# 1.7.1 supported Python 2.7, 3.4, 3.5, 3.6, 3.7 (see the original .travis.yml).
+# setup-python can't provide 2.7-3.6 on modern runners, so each version runs in
+# its official python:<ver> Docker image. Checkout stays on the host (avoids the
+# old-glibc-in-container problem); the workspace is mounted into the container.
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["2.7", "3.4", "3.5", "3.6", "3.7"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests on Python ${{ matrix.python }} (deps time-machine pinned to release date)
+        run: |
+          docker run --rm -v "$PWD":/src -w /src "python:${{ matrix.python }}" sh -c '
+            # atomicwrites (a pytest transitive dep) is missing from the time-machine mirror; source it from PyPI
+            python -m pip install atomicwrites &&
+            python -m pip install --index-url "https://:2018-12-07T13:40:06.872228Z@time-machines-pypi.sealsecurity.io/" ".[test,crypto]" &&
+            python -m pytest tests/ -o addopts=""
+          '
